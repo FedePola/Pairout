@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>🎄 Christmas Outburst Game 🎄</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<style>
+  body {
+    font-family: Arial, sans-serif;
+    background: linear-gradient(to bottom, #8ED1FC, #FFF);
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    text-align: center;
+  }
+  .card {
+    background: #fff3e0;
+    padding: 30px;
+    border-radius: 15px;
+    width: 320px;
+    box-shadow: 2px 2px 15px rgba(0,0,0,0.3);
+    margin: 10px;
+  }
+  h2 {
+    color: #B71C1C;
+    text-shadow: 1px 1px #fff;
+  }
+  button {
+    padding: 12px;
+    margin-top: 15px;
+    width: 100%;
+    font-size: 16px;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    background: #D32F2F;
+    color: white;
+  }
+  button:hover { opacity: 0.9; }
+  #timer { font-size: 24px; font-weight: bold; color: #388E3C; }
+</style>
+</head>
+<body>
+
+<div class="card" id="setup">
+  <h2>🎄 Christmas Outburst 🎄</h2>
+  <p>Enter round time (seconds):</p>
+  <input id="roundTimeInput" type="number" placeholder="60">
+  <button onclick="startRound()">Start Round</button>
+</div>
+
+<div class="card hidden" id="game">
+  <h2 id="secretWord">🎅 Secret Name 🎅</h2>
+  <p>Time left: <span id="timer">0</span>s</p>
+  <button onclick="nextWord()">Next Name</button>
+</div>
+
+<div class="card hidden" id="endRound">
+  <h2>⏰ Time's Up!</h2>
+  <button onclick="restartGame()">Start New Round</button>
+</div>
+
+<audio id="tickSound" src="https://www.soundjay.com/buttons/sounds/beep-07.mp3" preload="auto"></audio>
+
+<script>
+const secretWords = [
+  "Beeba","Pierr","Dodo","Pola","Steven","Bavly","Leo","Baher",
+  "Petro","Teo","Doris","Jessy","Christine","Karol","Heaven",
+  "Tia","Maureen","Clara","Julie","Tutu","Ben","Nathalie",
+  "Buckets","Younan","Wella","Cyril M","Soso"
+];
+
+let shuffledWords = [];
+let currentIndex = 0;
+let roundTime = 60;
+let timerInterval;
+
+function shuffle(array) {
+  return array.sort(() => Math.random() - 0.5);
+}
+
+function startRound() {
+  roundTime = parseInt(document.getElementById("roundTimeInput").value) || 60;
+  shuffledWords = shuffle([...secretWords]);
+  currentIndex = 0;
+
+  document.getElementById("setup").classList.add("hidden");
+  document.getElementById("endRound").classList.add("hidden");
+  document.getElementById("game").classList.remove("hidden");
+
+  showWord();
+
+  document.getElementById("timer").innerText = roundTime;
+  timerInterval = setInterval(() => {
+    roundTime--;
+    document.getElementById("timer").innerText = roundTime;
+
+    // play tick sound every second
+    document.getElementById("tickSound").play();
+
+    if(roundTime <= 0){
+      clearInterval(timerInterval);
+      endRound();
+    }
+  }, 1000);
+}
+
+function showWord() {
+  if(currentIndex < shuffledWords.length){
+    document.getElementById("secretWord").innerText = shuffledWords[currentIndex];
+  } else {
+    // If out of words, reshuffle
+    shuffledWords = shuffle([...secretWords]);
+    currentIndex = 0;
+    document.getElementById("secretWord").innerText = shuffledWords[currentIndex];
+  }
+}
+
+function nextWord(){
+  currentIndex++;
+  showWord();
+}
+
+function endRound(){
+  document.getElementById("game").classList.add("hidden");
+  document.getElementById("endRound").classList.remove("hidden");
+}
+
+function restartGame(){
+  document.getElementById("setup").classList.remove("hidden");
+  document.getElementById("endRound").classList.add("hidden");
+}
+</script>
+
+</body>
+</html>
